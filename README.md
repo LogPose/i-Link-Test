@@ -1,47 +1,38 @@
-# Getting Started with Create React App
+Выполненное тестовое задание для компании "i-Link".
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Выполнялось на IDE Visual Studio Code v.1.56.2.
 
-## Available Scripts
+После скачивания репозитория необходимо с помощью команды "npm install" установить пакеты, не загруженные на GitHub.
 
-In the project directory, you can run:
+Проект не собран в билд, поэтому запускать приложение следует через IDE с помощью команды в терминале "npm start" (требуется установленный NodeJS)
 
-### `npm start`
+Дополнительных настроек не требуется.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+_**По техническому заданию:**_
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+**_Основное флоу:_**
 
-### `npm test`
+_Пользователю отображается фраза на русском языке._ **+**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+_Он должен составить перевод фразы из предоставленного (облака) набора слов с помощью drag and drop._ **+**
 
-### `npm run build`
+_При заполнении варианта перевода предоставить возможность проверить его корректность._ **+**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+_При успешном прохождении проверки, уведомить пользователя об этом и с помощью text to speech воспроизвести фразу составленную пользователем._ **+**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+_При не прошедшей проверке также уведомить пользователя об ошибке (без воспроизведения фразы)._ **+**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+_**В приложении должно быть предусмотрено:**_
 
-### `npm run eject`
+_Сортировка слов внутри (облака) набора вариантов фраз. Слово при перетаскивании его обратно в набор должно сначала встать в любое свободное место в наборе. А после этого с анимацией вернуться на то место, где оно было изначально (см. прототип)._ **-**
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+_**Обязательные требования:**_
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+_TypeScript._ **Выполнено**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+_Использовать git._ **Выполнено**
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+_Дедлайнов нет, но надо обязательно трекать время, потраченное на тестовое задание._ **6 часов**
 
-## Learn More
+_Использование styled-component_ **Выполнено**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-# i-Link-Test
