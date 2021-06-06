@@ -1,4 +1,4 @@
-import React, { DragEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, DragEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 
 const AppWindow = styled.div`
@@ -15,7 +15,7 @@ const AppWindow = styled.div`
 
 const TaskWindow = styled.div`
   width: 360px;
-  height: 150px;
+  height: 100px;
   background-color: rgba(153, 255, 255, 0.774);
   margin: 10px auto;
   font-family: "TaskFont";
@@ -29,8 +29,8 @@ const TaskWindow = styled.div`
 
 const SolutionWindow = styled.div`
   width: 360px;
-  height: 100px;
-  background-color: rgba(206, 206, 206, 0.774);
+  height: 125px;
+  background-color: rgba(137, 220, 224, 0.568);
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -41,7 +41,7 @@ const SolutionWindow = styled.div`
 
 const WordsWindow = styled.div`
   width: 360px;
-  height: 100px;
+  height: 125px;
   background-color: rgba(153, 197, 255, 0.774);
   margin: 10px auto;
   display: flex;
@@ -83,6 +83,80 @@ const Words = styled.div`
   font-family: "WordsFont";
 `;
 
+const AddNewExampleWindow = styled.div`
+  width: 380px;
+  height: 480px;
+  background-color: rgba(124, 255, 163, 0.904);
+  z-index: 2;
+  margin-top: 10px;
+  margin-left: 10px;
+  box-shadow: 0px 0px 150px rgba(27, 138, 92, 0.904);
+  border-radius: 30px;
+  position: absolute;
+`;
+
+const AddNewExampleButton = styled.button`
+  width: 150px;
+  height: 50px;
+  background-color: #ccc;
+  margin: 0 10px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(255, 253, 117, 0.726);
+  }
+  :active {
+    background-color: rgba(255, 251, 23, 0.726);
+  }
+  font-family: "TaskFont";
+`;
+
+const NewTextArea = styled.textarea`
+  width: 350px;
+  height: 170px;
+  resize: none;
+  outline: none;
+  border: 2px rgba(7, 116, 31, 0.904) solid;
+  margin-top: 20px;
+  margin-left: 10px;
+  font-family: "TaskFont";
+`;
+
+const ConfirmNewExampleButton = styled.button`
+  width: 180px;
+  height: 50px;
+  background-color: #ccc;
+  margin: 5px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(103, 236, 91, 0.801);
+  }
+  :active {
+    background-color: rgba(43, 211, 28, 0.801);
+  }
+  font-family: "TaskFont";
+`;
+
+const DeclineNewExampleButton = styled.button`
+  width: 180px;
+  height: 50px;
+  background-color: #ccc;
+  margin: 5px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(240, 87, 87, 0.801);
+  }
+  :active {
+    background-color: rgba(221, 25, 25, 0.801);
+  }
+  font-family: "TaskFont";
+`;
+
 function App() {
   const [examples, setExamples] = useState([
     {
@@ -110,6 +184,11 @@ function App() {
       rus: "У меня плохое предчувствие об этом",
       eng: "I have a bad feeling about this",
     },
+    {
+      id: 6,
+      rus: "Гена Букин наш герой, Гена Букин чемпион",
+      eng: "Gena Bukin is our hero, Gena Bukin is a champion",
+    },
   ]);
 
   const [currentExample, setCurrentExample] = useState(
@@ -125,6 +204,12 @@ function App() {
   const [currentWord, setCurrentWord] = useState<string>("");
 
   const [thatsAllFolks, setThatsAllFolks] = useState<boolean>(false);
+
+  const [newTermRus, setNewTermRus] = useState<string>("");
+  const [newTermEng, setNewTermEng] = useState<string>("");
+
+  const [counter, setCounter] = useState<number>(100);
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
     setSolutionWords(currentExample.eng.split(" "));
@@ -153,6 +238,8 @@ function App() {
   };
 
   const wordSortHandler = (event: DragEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
     if (solution.includes(currentWord)) {
       const currentIndex = solution.indexOf(currentWord);
       solution.splice(currentIndex, 1);
@@ -168,21 +255,53 @@ function App() {
   };
 
   const dropHandler = (event: DragEvent) => {
+    event.stopPropagation();
     event.preventDefault();
-    if (solution.filter((el) => el === currentWord).length !== 0) {
+    if (solution.includes(currentWord) && solutionWords.includes(currentWord)) {
+      setSolution((prev) => [...prev, currentWord]);
+      let currentWordIndex = solutionWords.indexOf(currentWord);
+      setSolutionWords((prev) => [
+        ...prev.slice(0, currentWordIndex),
+        ...prev.slice(currentWordIndex + 1, prev.length),
+      ]);
+    } else if (
+      solution.includes(currentWord) &&
+      !solutionWords.includes(currentWord)
+    ) {
       return solution;
+    } else {
+      setSolution((prev) => [...prev, currentWord]);
+      let currentWordIndex = solutionWords.indexOf(currentWord);
+      setSolutionWords((prev) => [
+        ...prev.slice(0, currentWordIndex),
+        ...prev.slice(currentWordIndex + 1, prev.length),
+      ]);
     }
-    setSolution((prev) => [...prev, currentWord]);
-    setSolutionWords((prev) => prev.filter((el) => el !== currentWord));
   };
 
   const backDropHandler = (event: DragEvent) => {
+    event.stopPropagation();
     event.preventDefault();
-    if (solutionWords.filter((el) => el === currentWord).length !== 0) {
-      return solution;
+    if (solutionWords.includes(currentWord) && solution.includes(currentWord)) {
+      let currentWordIndex = solution.indexOf(currentWord);
+      setSolution((prev) => [
+        ...prev.slice(0, currentWordIndex),
+        ...prev.slice(currentWordIndex + 1, prev.length),
+      ]);
+      setSolutionWords((prev) => [...prev, currentWord]);
+    } else if (
+      solutionWords.includes(currentWord) &&
+      !solution.includes(currentWord)
+    ) {
+      return solutionWords;
+    } else {
+      let currentWordIndex = solution.indexOf(currentWord);
+      setSolution((prev) => [
+        ...prev.slice(0, currentWordIndex),
+        ...prev.slice(currentWordIndex + 1, prev.length),
+      ]);
+      setSolutionWords((prev) => [...prev, currentWord]);
     }
-    setSolution((prev) => prev.filter((el) => el !== currentWord));
-    setSolutionWords((prev) => [...prev, currentWord]);
   };
 
   const checkSolution = () => {
@@ -202,58 +321,119 @@ function App() {
     return Math.floor(Math.random() * max);
   }
 
+  const termRusHandler = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement;
+    setNewTermRus(target.value);
+    console.log(newTermRus);
+  };
+
+  const termEngHandler = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement;
+    setNewTermEng(target.value);
+    console.log(newTermEng);
+  };
+
+  const AddNewExample = () => {
+    setCounter((prev) => prev + 1);
+    if (newTermRus.length === 0 || newTermEng.length === 0) {
+      alert("Сначала введите предложения в соответствующие поля!");
+    }
+    if (newTermRus.length !== 0 || newTermEng.length !== 0) {
+      let newExample = { id: counter, rus: newTermRus, eng: newTermEng };
+      setExamples((prev) => [...prev, newExample]);
+      setVisible(false);
+      setNewTermEng("");
+      setNewTermRus("");
+      setThatsAllFolks(false);
+    }
+  };
+
+  const cancelAddingNewExample = () => {
+    setVisible(false);
+    setNewTermEng("");
+    setNewTermRus("");
+  };
+
   return (
-    <AppWindow>
-      <h3 style={{ fontFamily: "TaskFont" }}>Переведите данное предложение:</h3>
-      <TaskWindow>
-        {thatsAllFolks ? (
-          <p>Задания закончились! Спасибо за участие!</p>
-        ) : (
-          currentExample.rus
-        )}
-      </TaskWindow>
-      <SolutionWindow
-        onDragOver={(event) => dragOverHandler(event)}
-        onDrop={(event) => dropHandler(event)}
+    <div>
+      <AddNewExampleWindow
+        style={visible ? { display: "block" } : { display: "none" }}
       >
-        {solution.map((sol) => {
-          return (
-            <Words
-              draggable={true}
-              key={sol}
-              onDragStart={(event) => dragStartHandler(event, sol)}
-              onDragOver={(event) => dragOverWordHandler(event, sol)}
-              onDrop={(event) => wordSortHandler(event)}
-            >
-              {sol}
-            </Words>
-          );
-        })}
-      </SolutionWindow>
-      <WordsWindow
-        onDragOver={(event) => dragOverHandler(event)}
-        onDrop={(event) => backDropHandler(event)}
-      >
-        {solutionWords.sort().map((ex) => {
-          return (
-            <Words
-              key={ex}
-              draggable={true}
-              onDragStart={(event) => dragStartHandler(event, ex)}
-              // onDrop={(event) => dropHandler(event)}
-            >
-              {ex}
-            </Words>
-          );
-        })}
-      </WordsWindow>
-      <ConfirmButton
-        disabled={thatsAllFolks ? true : false}
-        onClick={checkSolution}
-      >
-        Проверить
-      </ConfirmButton>
-    </AppWindow>
+        <NewTextArea
+          value={newTermRus}
+          onChange={(event) => termRusHandler(event)}
+          maxLength={150}
+          placeholder="Введите предложение на русском (не более 150 символов)"
+        ></NewTextArea>
+        <NewTextArea
+          value={newTermEng}
+          onChange={(event) => termEngHandler(event)}
+          maxLength={150}
+          placeholder="Введите перевод (желательно точный) предложения на английском (не более 150 символов)"
+        ></NewTextArea>
+        <ConfirmNewExampleButton onClick={() => AddNewExample()}>
+          Подтвердить
+        </ConfirmNewExampleButton>
+        <DeclineNewExampleButton onClick={() => cancelAddingNewExample()}>
+          Отмена
+        </DeclineNewExampleButton>
+      </AddNewExampleWindow>
+      <AppWindow>
+        <h3 style={{ fontFamily: "TaskFont" }}>
+          Переведите данное предложение:
+        </h3>
+        <TaskWindow>
+          {thatsAllFolks ? (
+            <p>Задания закончились! Спасибо за участие!</p>
+          ) : (
+            currentExample.rus
+          )}
+        </TaskWindow>
+        <SolutionWindow
+          onDragOver={(event) => dragOverHandler(event)}
+          onDrop={(event) => dropHandler(event)}
+        >
+          {solution.map((sol) => {
+            return (
+              <Words
+                draggable={true}
+                key={Math.random()}
+                onDragStart={(event) => dragStartHandler(event, sol)}
+                onDragOver={(event) => dragOverWordHandler(event, sol)}
+                onDrop={(event) => wordSortHandler(event)}
+              >
+                {sol}
+              </Words>
+            );
+          })}
+        </SolutionWindow>
+        <WordsWindow
+          onDragOver={(event) => dragOverHandler(event)}
+          onDrop={(event) => backDropHandler(event)}
+        >
+          {solutionWords.sort().map((ex) => {
+            return (
+              <Words
+                key={Math.random()}
+                draggable={true}
+                onDragStart={(event) => dragStartHandler(event, ex)}
+              >
+                {ex}
+              </Words>
+            );
+          })}
+        </WordsWindow>
+        <ConfirmButton
+          disabled={thatsAllFolks ? true : false}
+          onClick={checkSolution}
+        >
+          Проверить
+        </ConfirmButton>
+        <AddNewExampleButton onClick={() => setVisible(true)}>
+          Добавить пример
+        </AddNewExampleButton>
+      </AppWindow>
+    </div>
   );
 }
 
