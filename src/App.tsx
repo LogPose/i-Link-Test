@@ -204,6 +204,8 @@ function App() {
       alert("Для начала неплохо было бы хотя бы попытаться ответить!");
     } else if (solution.join(" ") === currentExample.eng) {
       let utterance = new SpeechSynthesisUtterance(currentExample.eng);
+      let voices = window.speechSynthesis.getVoices();
+      utterance.voice = voices[2];
       speechSynthesis.speak(utterance);
       setExamples((prev) => prev.filter((ex) => ex.id !== currentExample.id));
       setSolution([]);
