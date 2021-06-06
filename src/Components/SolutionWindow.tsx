@@ -1,0 +1,105 @@
+import React from "react";
+import styled from "styled-components";
+
+const SolutionWindow = styled.div`
+  width: 360px;
+  height: 125px;
+  background-color: rgba(137, 220, 224, 0.568);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  position: relative;
+`;
+
+const Words = styled.div`
+  position: relative;
+  width: 80px;
+  height: 20px;
+  background-color: #fff;
+  display: inline-block;
+  margin: 5px;
+  cursor: grab;
+  border-radius: 5px;
+  text-align: center;
+  :hover {
+    background-color: rgba(119, 239, 255, 0.651);
+  }
+  :active {
+    background-color: rgba(1, 225, 255, 0.651);
+  }
+  font-family: "WordsFont";
+`;
+
+const ResetButton = styled.button`
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  background-color: rgba(143, 79, 79, 0.329);
+  top: -5px;
+  right: -15px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(240, 87, 87, 0.801);
+  }
+  :active {
+    background-color: rgba(221, 25, 25, 0.801);
+  }
+  font-family: "TaskFont";
+`;
+
+type NewSolutionWindowProps = {
+  dragOverHandler(event: React.DragEvent<Element>): void;
+  dropHandler(event: React.DragEvent<Element>): void;
+  wordSortHandler(event: React.DragEvent<Element>): void;
+  dragOverWordHandler(event: React.DragEvent<Element>, sol: string): void;
+  resetHandler(): void;
+  dragHandler(sol: string): void;
+  thatsAllFolks: boolean;
+  solution: string[];
+};
+
+const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
+  dragOverHandler,
+  dragOverWordHandler,
+  dropHandler,
+  wordSortHandler,
+  resetHandler,
+  dragHandler,
+  thatsAllFolks,
+  solution,
+}) => {
+  return (
+    <SolutionWindow
+      onDragOver={(event) => dragOverHandler(event)}
+      onDrop={(event) => dropHandler(event)}
+    >
+      <ResetButton
+        disabled={thatsAllFolks || solution.length === 0 ? true : false}
+        onClick={() => resetHandler()}
+      >
+        Reset
+      </ResetButton>
+      {solution.map((sol) => {
+        return (
+          <Words
+            draggable={true}
+            key={Math.random()}
+            // onDragStart={() => dragStartHandler(sol)}
+            onDragOver={(event) => dragOverWordHandler(event, sol)}
+            onDrop={(event) => wordSortHandler(event)}
+            onDrag={() => dragHandler(sol)}
+          >
+            {sol}
+          </Words>
+        );
+      })}
+    </SolutionWindow>
+  );
+};
+
+export default NewSolutionWindow;

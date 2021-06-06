@@ -1,5 +1,9 @@
 import React, { ChangeEvent, DragEvent, useEffect, useState } from "react";
 import styled from "styled-components";
+import NewAddNewExampleWindow from "./Components/AddNewExampleWindow";
+import NewSolutionWindow from "./Components/SolutionWindow";
+import NewTaskWindow from "./Components/TaskWindow";
+import NewWordsWindow from "./Components/WordsWindow";
 
 const AppWindow = styled.div`
   width: 400px;
@@ -11,46 +15,6 @@ const AppWindow = styled.div`
   overflow: hidden;
   box-sizing: border-box;
   text-align: center;
-  position: relative;
-`;
-
-const TaskWindow = styled.div`
-  width: 360px;
-  height: 100px;
-  background-color: rgba(153, 255, 255, 0.774);
-  margin: 10px auto;
-  font-family: "TaskFont";
-  font-size: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  border-radius: 10px;
-`;
-
-const SolutionWindow = styled.div`
-  width: 360px;
-  height: 125px;
-  background-color: rgba(137, 220, 224, 0.568);
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  border-radius: 10px;
-  position: relative;
-`;
-
-const WordsWindow = styled.div`
-  width: 360px;
-  height: 125px;
-  background-color: rgba(153, 197, 255, 0.774);
-  margin: 10px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  border-radius: 10px;
   position: relative;
 `;
 
@@ -71,37 +35,6 @@ const ConfirmButton = styled.button`
   font-family: "TaskFont";
 `;
 
-const Words = styled.div`
-  position: relative;
-  width: 80px;
-  height: 20px;
-  background-color: #fff;
-  display: inline-block;
-  margin: 5px;
-  cursor: grab;
-  border-radius: 5px;
-  text-align: center;
-  :hover {
-    background-color: rgba(119, 239, 255, 0.651);
-  }
-  :active {
-    background-color: rgba(1, 225, 255, 0.651);
-  }
-  font-family: "WordsFont";
-`;
-
-const AddNewExampleWindow = styled.div`
-  width: 380px;
-  height: 480px;
-  background-color: rgb(147, 255, 156);
-  z-index: 2;
-  margin-top: 10px;
-  margin-left: 10px;
-  box-shadow: 0px 0px 20px rgba(27, 138, 92, 1);
-  border-radius: 30px;
-  position: absolute;
-`;
-
 const AddNewExampleButton = styled.button`
   width: 150px;
   height: 50px;
@@ -115,89 +48,6 @@ const AddNewExampleButton = styled.button`
   }
   :active {
     background-color: rgba(255, 251, 23, 0.726);
-  }
-  font-family: "TaskFont";
-`;
-
-const NewTextArea = styled.textarea`
-  width: 350px;
-  height: 170px;
-  resize: none;
-  outline: none;
-  border: 2px rgba(7, 116, 31, 0.904) solid;
-  margin-top: 20px;
-  margin-left: 10px;
-  font-family: "TaskFont";
-`;
-
-const ConfirmNewExampleButton = styled.button`
-  width: 180px;
-  height: 50px;
-  background-color: #ccc;
-  margin: 5px;
-  border-radius: 50px;
-  outline: none;
-  border: none;
-  :hover {
-    background-color: rgba(103, 236, 91, 0.801);
-  }
-  :active {
-    background-color: rgba(43, 211, 28, 0.801);
-  }
-  font-family: "TaskFont";
-`;
-
-const DeclineNewExampleButton = styled.button`
-  width: 180px;
-  height: 50px;
-  background-color: #ccc;
-  margin: 5px;
-  border-radius: 50px;
-  outline: none;
-  border: none;
-  :hover {
-    background-color: rgba(240, 87, 87, 0.801);
-  }
-  :active {
-    background-color: rgba(221, 25, 25, 0.801);
-  }
-  font-family: "TaskFont";
-`;
-
-const ScipButton = styled.button`
-  position: absolute;
-  width: 50px;
-  height: 20px;
-  background-color: rgba(143, 79, 79, 0.329);
-  top: 55px;
-  right: 5px;
-  border-radius: 50px;
-  outline: none;
-  border: none;
-  :hover {
-    background-color: rgba(240, 87, 87, 0.801);
-  }
-  :active {
-    background-color: rgba(221, 25, 25, 0.801);
-  }
-  font-family: "TaskFont";
-`;
-
-const ResetButton = styled.button`
-  position: absolute;
-  width: 50px;
-  height: 20px;
-  background-color: rgba(143, 79, 79, 0.329);
-  top: -5px;
-  right: -15px;
-  border-radius: 50px;
-  outline: none;
-  border: none;
-  :hover {
-    background-color: rgba(240, 87, 87, 0.801);
-  }
-  :active {
-    background-color: rgba(221, 25, 25, 0.801);
   }
   font-family: "TaskFont";
 `;
@@ -231,8 +81,8 @@ function App() {
     },
     {
       id: 6,
-      rus: "Гена Букин наш герой, Гена Букин чемпион",
-      eng: "Gena Bukin is our hero, Gena Bukin is a champion",
+      rus: "А потом назвали меня как тот самолёт, который был турецкий",
+      eng: "And then they named me like that plane, which was Turkish",
     },
   ]);
 
@@ -267,10 +117,6 @@ function App() {
       setSolutionWords([]);
     }
   }, [examples]);
-
-  // const dragStartHandler = (ex: string) => {
-  //   setCurrentWord(ex)
-  // };
 
   const dragHandler = (word: string) => {
     setCurrentWord(word);
@@ -381,7 +227,7 @@ function App() {
     setNewTermEng(target.value);
   };
 
-  const AddNewExample = () => {
+  const addNewExample = () => {
     setCounter((prev) => prev + 1);
     if (newTermRus.length === 0 || newTermEng.length === 0) {
       alert("Сначала введите предложения в соответствующие поля!");
@@ -389,6 +235,7 @@ function App() {
     if (newTermRus.length !== 0 && newTermEng.length !== 0) {
       let newExample = { id: counter, rus: newTermRus, eng: newTermEng };
       setExamples((prev) => [...prev, newExample]);
+      setSolution([]);
       setVisible(false);
       setNewTermEng("");
       setNewTermRus("");
@@ -414,87 +261,40 @@ function App() {
 
   return (
     <div>
-      <AddNewExampleWindow
-        style={visible ? { display: "block" } : { display: "none" }}
-      >
-        <NewTextArea
-          value={newTermRus}
-          onChange={(event) => termRusHandler(event)}
-          maxLength={150}
-          placeholder="Введите предложение на русском (не более 150 символов)"
-        ></NewTextArea>
-        <NewTextArea
-          value={newTermEng}
-          onChange={(event) => termEngHandler(event)}
-          maxLength={150}
-          placeholder="Введите перевод (желательно точный) предложения на английском (не более 150 символов)"
-        ></NewTextArea>
-        <ConfirmNewExampleButton onClick={() => AddNewExample()}>
-          Подтвердить
-        </ConfirmNewExampleButton>
-        <DeclineNewExampleButton onClick={() => cancelAddingNewExample()}>
-          Отмена
-        </DeclineNewExampleButton>
-      </AddNewExampleWindow>
+      <NewAddNewExampleWindow
+        visible={visible}
+        newTermEng={newTermEng}
+        newTermRus={newTermRus}
+        termRusHandler={termRusHandler}
+        termEngHandler={termEngHandler}
+        addNewExample={addNewExample}
+        cancelAddingNewExample={cancelAddingNewExample}
+      />
       <AppWindow>
         <h3 style={{ fontFamily: "TaskFont" }}>
           Переведите данное предложение:
         </h3>
-        <TaskWindow>
-          {thatsAllFolks ? (
-            <p>Задания закончились! Спасибо за участие!</p>
-          ) : (
-            currentExample.rus
-          )}
-          <ScipButton
-            disabled={thatsAllFolks ? true : false}
-            onClick={() => skipHandler()}
-          >
-            Skip
-          </ScipButton>
-        </TaskWindow>
-        <SolutionWindow
-          onDragOver={(event) => dragOverHandler(event)}
-          onDrop={(event) => dropHandler(event)}
-        >
-          <ResetButton
-            disabled={thatsAllFolks || solution.length === 0 ? true : false}
-            onClick={() => resetHandler()}
-          >
-            Reset
-          </ResetButton>
-          {solution.map((sol) => {
-            return (
-              <Words
-                draggable={true}
-                key={Math.random()}
-                // onDragStart={() => dragStartHandler(sol)}
-                onDragOver={(event) => dragOverWordHandler(event, sol)}
-                onDrop={(event) => wordSortHandler(event)}
-                onDrag={() => dragHandler(sol)}
-              >
-                {sol}
-              </Words>
-            );
-          })}
-        </SolutionWindow>
-        <WordsWindow
-          onDragOver={(event) => dragOverHandler(event)}
-          onDrop={(event) => backDropHandler(event)}
-        >
-          {solutionWords.sort().map((ex) => {
-            return (
-              <Words
-                key={Math.random()}
-                draggable={true}
-                // onDragStart={() => dragStartHandler(ex)}\
-                onDrag={() => dragHandler(ex)}
-              >
-                {ex}
-              </Words>
-            );
-          })}
-        </WordsWindow>
+        <NewTaskWindow
+          onSkip={skipHandler}
+          currentExample={currentExample}
+          thatsAllFolks={thatsAllFolks}
+        />
+        <NewSolutionWindow
+          thatsAllFolks={thatsAllFolks}
+          solution={solution}
+          resetHandler={resetHandler}
+          dragHandler={dragHandler}
+          dragOverHandler={dragOverHandler}
+          dragOverWordHandler={dragOverWordHandler}
+          dropHandler={dropHandler}
+          wordSortHandler={wordSortHandler}
+        />
+        <NewWordsWindow
+          solutionWords={solutionWords}
+          dragHandler={dragHandler}
+          dragOverHandler={dragOverHandler}
+          backDropHandler={backDropHandler}
+        />
         <ConfirmButton
           disabled={thatsAllFolks ? true : false}
           onClick={checkSolution}
