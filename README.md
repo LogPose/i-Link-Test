@@ -1,2 +1,0 @@
-# iLinkTest
-# logpose.github.io
