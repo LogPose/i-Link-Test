@@ -458,7 +458,7 @@ function App() {
           onDrop={(event) => dropHandler(event)}
         >
           <ResetButton
-            disabled={thatsAllFolks ? true : false}
+            disabled={thatsAllFolks || solution.length === 0 ? true : false}
             onClick={() => resetHandler()}
           >
             Reset
