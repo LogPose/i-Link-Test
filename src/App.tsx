@@ -11,6 +11,7 @@ const AppWindow = styled.div`
   overflow: hidden;
   box-sizing: border-box;
   text-align: center;
+  position: relative;
 `;
 
 const TaskWindow = styled.div`
@@ -37,6 +38,7 @@ const SolutionWindow = styled.div`
   align-items: center;
   flex-wrap: wrap;
   border-radius: 10px;
+  position: relative;
 `;
 
 const WordsWindow = styled.div`
@@ -49,6 +51,7 @@ const WordsWindow = styled.div`
   align-items: center;
   flex-wrap: wrap;
   border-radius: 10px;
+  position: relative;
 `;
 
 const ConfirmButton = styled.button`
@@ -69,6 +72,7 @@ const ConfirmButton = styled.button`
 `;
 
 const Words = styled.div`
+  position: relative;
   width: 80px;
   height: 20px;
   background-color: #fff;
@@ -78,7 +82,10 @@ const Words = styled.div`
   border-radius: 5px;
   text-align: center;
   :hover {
-    box-shadow: 2px 2px 2px black;
+    background-color: rgba(119, 239, 255, 0.651);
+  }
+  :active {
+    background-color: rgba(1, 225, 255, 0.651);
   }
   font-family: "WordsFont";
 `;
@@ -86,11 +93,11 @@ const Words = styled.div`
 const AddNewExampleWindow = styled.div`
   width: 380px;
   height: 480px;
-  background-color: rgba(124, 255, 163, 0.904);
+  background-color: rgb(147, 255, 156);
   z-index: 2;
   margin-top: 10px;
   margin-left: 10px;
-  box-shadow: 0px 0px 150px rgba(27, 138, 92, 0.904);
+  box-shadow: 0px 0px 20px rgba(27, 138, 92, 1);
   border-radius: 30px;
   position: absolute;
 `;
@@ -145,6 +152,44 @@ const DeclineNewExampleButton = styled.button`
   height: 50px;
   background-color: #ccc;
   margin: 5px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(240, 87, 87, 0.801);
+  }
+  :active {
+    background-color: rgba(221, 25, 25, 0.801);
+  }
+  font-family: "TaskFont";
+`;
+
+const ScipButton = styled.button`
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  background-color: rgba(143, 79, 79, 0.329);
+  top: 55px;
+  right: 5px;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  :hover {
+    background-color: rgba(240, 87, 87, 0.801);
+  }
+  :active {
+    background-color: rgba(221, 25, 25, 0.801);
+  }
+  font-family: "TaskFont";
+`;
+
+const ResetButton = styled.button`
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  background-color: rgba(143, 79, 79, 0.329);
+  top: -5px;
+  right: -15px;
   border-radius: 50px;
   outline: none;
   border: none;
@@ -219,16 +264,20 @@ function App() {
       setCurrentExample(examples[getRandomInt(examples.length)]);
     } else {
       setThatsAllFolks(true);
+      setSolutionWords([]);
     }
   }, [examples]);
 
-  const dragStartHandler = (event: DragEvent, ex: string) => {
-    setCurrentWord(ex);
+  // const dragStartHandler = (ex: string) => {
+  //   setCurrentWord(ex)
+  // };
+
+  const dragHandler = (word: string) => {
+    setCurrentWord(word);
   };
 
   const dragOverHandler = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
   };
 
   const dragOverWordHandler = (event: DragEvent, sol: string) => {
@@ -312,6 +361,7 @@ function App() {
       speechSynthesis.speak(utterance);
       setExamples((prev) => prev.filter((ex) => ex.id !== currentExample.id));
       setSolution([]);
+      alert("Ответ правильный! Отличная работа!");
     } else {
       alert("Ответ неверный! Попробуй ещё разок!");
     }
@@ -324,13 +374,11 @@ function App() {
   const termRusHandler = (event: ChangeEvent) => {
     let target = event.target as HTMLInputElement;
     setNewTermRus(target.value);
-    console.log(newTermRus);
   };
 
   const termEngHandler = (event: ChangeEvent) => {
     let target = event.target as HTMLInputElement;
     setNewTermEng(target.value);
-    console.log(newTermEng);
   };
 
   const AddNewExample = () => {
@@ -338,7 +386,7 @@ function App() {
     if (newTermRus.length === 0 || newTermEng.length === 0) {
       alert("Сначала введите предложения в соответствующие поля!");
     }
-    if (newTermRus.length !== 0 || newTermEng.length !== 0) {
+    if (newTermRus.length !== 0 && newTermEng.length !== 0) {
       let newExample = { id: counter, rus: newTermRus, eng: newTermEng };
       setExamples((prev) => [...prev, newExample]);
       setVisible(false);
@@ -352,6 +400,16 @@ function App() {
     setVisible(false);
     setNewTermEng("");
     setNewTermRus("");
+  };
+
+  const skipHandler = () => {
+    setExamples((prev) => prev.filter((ex) => ex.id !== currentExample.id));
+    setSolution([]);
+  };
+
+  const resetHandler = () => {
+    setSolution([]);
+    setSolutionWords(currentExample.eng.split(" "));
   };
 
   return (
@@ -388,19 +446,32 @@ function App() {
           ) : (
             currentExample.rus
           )}
+          <ScipButton
+            disabled={thatsAllFolks ? true : false}
+            onClick={() => skipHandler()}
+          >
+            Skip
+          </ScipButton>
         </TaskWindow>
         <SolutionWindow
           onDragOver={(event) => dragOverHandler(event)}
           onDrop={(event) => dropHandler(event)}
         >
+          <ResetButton
+            disabled={thatsAllFolks ? true : false}
+            onClick={() => resetHandler()}
+          >
+            Reset
+          </ResetButton>
           {solution.map((sol) => {
             return (
               <Words
                 draggable={true}
                 key={Math.random()}
-                onDragStart={(event) => dragStartHandler(event, sol)}
+                // onDragStart={() => dragStartHandler(sol)}
                 onDragOver={(event) => dragOverWordHandler(event, sol)}
                 onDrop={(event) => wordSortHandler(event)}
+                onDrag={() => dragHandler(sol)}
               >
                 {sol}
               </Words>
@@ -416,7 +487,8 @@ function App() {
               <Words
                 key={Math.random()}
                 draggable={true}
-                onDragStart={(event) => dragStartHandler(event, ex)}
+                // onDragStart={() => dragStartHandler(ex)}\
+                onDrag={() => dragHandler(ex)}
               >
                 {ex}
               </Words>
