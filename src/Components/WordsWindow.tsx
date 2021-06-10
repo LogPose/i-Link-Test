@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import FlipMove from "react-flip-move";
 
 const Words = styled.div`
   position: relative;
@@ -17,7 +18,6 @@ const Words = styled.div`
   :active {
     background-color: rgba(1, 225, 255, 0.651);
   }
-  font-family: "WordsFont";
 `;
 
 const WordsWindow = styled.div`
@@ -31,6 +31,7 @@ const WordsWindow = styled.div`
   flex-wrap: wrap;
   border-radius: 10px;
   position: relative;
+  box-sizing: border-box;
 `;
 
 type newWordsWindowProps = {
@@ -51,17 +52,15 @@ const NewWordsWindow: React.FC<newWordsWindowProps> = ({
       onDragOver={(event) => dragOverHandler(event)}
       onDrop={(event) => backDropHandler(event)}
     >
-      {solutionWords.sort().map((ex) => {
-        return (
-          <Words
-            key={Math.random()}
-            draggable={true}
-            onDrag={() => dragHandler(ex)}
-          >
-            {ex}
-          </Words>
-        );
-      })}
+      <FlipMove>
+        {solutionWords.map((ex: string) => {
+          return (
+            <Words key={ex} draggable={true} onDrag={() => dragHandler(ex)}>
+              {ex}
+            </Words>
+          );
+        })}
+      </FlipMove>
     </WordsWindow>
   );
 };

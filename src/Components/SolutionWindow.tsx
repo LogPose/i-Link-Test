@@ -12,6 +12,7 @@ const SolutionWindow = styled.div`
   flex-wrap: wrap;
   border-radius: 10px;
   position: relative;
+  box-sizing: border-box;
 `;
 
 const Words = styled.div`
@@ -30,7 +31,6 @@ const Words = styled.div`
   :active {
     background-color: rgba(1, 225, 255, 0.651);
   }
-  font-family: "WordsFont";
 `;
 
 const ResetButton = styled.button`
@@ -49,7 +49,6 @@ const ResetButton = styled.button`
   :active {
     background-color: rgba(221, 25, 25, 0.801);
   }
-  font-family: "TaskFont";
 `;
 
 type NewSolutionWindowProps = {
@@ -79,25 +78,22 @@ const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
       onDrop={(event) => dropHandler(event)}
     >
       <ResetButton
-        disabled={thatsAllFolks || solution.length === 0 ? true : false}
+        disabled={thatsAllFolks || solution.length === 0}
         onClick={() => resetHandler()}
       >
         Reset
       </ResetButton>
-      {solution.map((sol) => {
-        return (
-          <Words
-            draggable={true}
-            key={Math.random()}
-            // onDragStart={() => dragStartHandler(sol)}
-            onDragOver={(event) => dragOverWordHandler(event, sol)}
-            onDrop={(event) => wordSortHandler(event)}
-            onDrag={() => dragHandler(sol)}
-          >
-            {sol}
-          </Words>
-        );
-      })}
+      {solution.map((sol: string, index: number) => (
+        <Words
+          draggable={true}
+          key={sol.toString() + index.toString()}
+          onDragOver={(event) => dragOverWordHandler(event, sol)}
+          onDrop={(event) => wordSortHandler(event)}
+          onDrag={() => dragHandler(sol)}
+        >
+          {sol}
+        </Words>
+      ))}
     </SolutionWindow>
   );
 };

@@ -2,15 +2,16 @@ import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 
 const AddNewExampleWindow = styled.div`
-  width: 380px;
-  height: 480px;
+  width: 400px;
+  height: 500px;
   background-color: rgb(147, 255, 156);
   z-index: 2;
-  margin-top: 10px;
-  margin-left: 10px;
-  box-shadow: 0px 0px 20px rgba(27, 138, 92, 1);
+  margin-left: 50%;
+  left: -200px;
+  box-shadow: 0px 0px 20px rgb(27, 138, 92);
   border-radius: 30px;
   position: absolute;
+  box-sizing: border-box;
 `;
 
 const NewTextArea = styled.textarea`
@@ -18,17 +19,16 @@ const NewTextArea = styled.textarea`
   height: 170px;
   resize: none;
   outline: none;
-  border: 2px rgba(7, 116, 31, 0.904) solid;
+  border: 2px rgba(7, 116, 31, 0.9) solid;
   margin-top: 20px;
-  margin-left: 10px;
-  font-family: "TaskFont";
+  margin-left: 20px;
 `;
 
 const ConfirmNewExampleButton = styled.button`
   width: 180px;
   height: 50px;
   background-color: #ccc;
-  margin: 5px;
+  margin: 10px;
   border-radius: 50px;
   outline: none;
   border: none;
@@ -38,14 +38,13 @@ const ConfirmNewExampleButton = styled.button`
   :active {
     background-color: rgba(43, 211, 28, 0.801);
   }
-  font-family: "TaskFont";
 `;
 
 const DeclineNewExampleButton = styled.button`
   width: 180px;
   height: 50px;
   background-color: #ccc;
-  margin: 5px;
+  margin: 10px;
   border-radius: 50px;
   outline: none;
   border: none;
@@ -55,11 +54,10 @@ const DeclineNewExampleButton = styled.button`
   :active {
     background-color: rgba(221, 25, 25, 0.801);
   }
-  font-family: "TaskFont";
 `;
 
 type AddNewExampleWindowProps = {
-  visible: boolean;
+  mistake: boolean;
   newTermRus: string;
   newTermEng: string;
   termRusHandler(event: ChangeEvent): void;
@@ -69,18 +67,16 @@ type AddNewExampleWindowProps = {
 };
 
 const NewAddNewExampleWindow: React.FC<AddNewExampleWindowProps> = ({
-  visible,
   newTermRus,
   newTermEng,
+  mistake,
   termEngHandler,
   termRusHandler,
   addNewExample,
   cancelAddingNewExample,
 }) => {
   return (
-    <AddNewExampleWindow
-      style={visible ? { display: "block" } : { display: "none" }}
-    >
+    <AddNewExampleWindow>
       <NewTextArea
         value={newTermRus}
         onChange={(event) => termRusHandler(event)}
@@ -94,7 +90,7 @@ const NewAddNewExampleWindow: React.FC<AddNewExampleWindowProps> = ({
         placeholder="Введите перевод (желательно точный) предложения на английском (не более 150 символов)"
       ></NewTextArea>
       <ConfirmNewExampleButton onClick={() => addNewExample()}>
-        Подтвердить
+        {mistake ? "Заполните поля!" : "Добавить"}
       </ConfirmNewExampleButton>
       <DeclineNewExampleButton onClick={() => cancelAddingNewExample()}>
         Отмена

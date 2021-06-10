@@ -1,5 +1,5 @@
 import React, { ChangeEvent, DragEvent, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import NewAddNewExampleWindow from "./Components/AddNewExampleWindow";
 import NewSolutionWindow from "./Components/SolutionWindow";
 import NewTaskWindow from "./Components/TaskWindow";
@@ -8,14 +8,15 @@ import NewWordsWindow from "./Components/WordsWindow";
 const AppWindow = styled.div`
   width: 400px;
   height: 500px;
-  background-color: #fff;
+  background-color: rgba(233, 233, 233, 0.8);
   margin-top: 20px;
+  margin-left: 50%;
+  left: -200px;
   border-radius: 50px;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
   text-align: center;
-  position: relative;
 `;
 
 const ConfirmButton = styled.button`
@@ -50,6 +51,50 @@ const AddNewExampleButton = styled.button`
     background-color: rgba(255, 251, 23, 0.726);
   }
   font-family: "TaskFont";
+`;
+
+const animationForAnswerWindow = keyframes`
+from {
+  opacity: 0;
+  margin-left: 350px;
+}
+to {
+  opacity: 0;
+  margin-left: -350px;
+}
+50% {
+  opacity: 1;
+  margin-left: 0px;
+}
+`;
+
+const NoAnswerWindow = styled.div`
+  width: 300px;
+  height: 100px;
+  background-color: rgba(66, 226, 213, 0.8);
+  font-size: 15px;
+  color: #fff;
+  display: flex;
+  margin-top: 10px;
+  left: 50px;
+  z-index: 2;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  border-radius: 40px;
+  position: absolute;
+  animation: ${animationForAnswerWindow} 3s forwards;
+  opacity: 0;
+`;
+const WrongAnswerWindow = styled(NoAnswerWindow)`
+  background-color: rgba(206, 76, 76, 0.8);
+  color: rgb(110, 11, 11);
+  font-size: 15px;
+`;
+const CorrectAnswerWindow = styled(NoAnswerWindow)`
+  background-color: rgba(75, 221, 55, 0.8);
+  color: rgb(18, 94, 8);
 `;
 
 function App() {
@@ -87,8 +132,10 @@ function App() {
   ]);
 
   const [currentExample, setCurrentExample] = useState(
-    examples[getRandomInt(examples.length)]
+    examples[Math.floor(Math.random() * examples.length)]
   );
+
+  const [answerStatus, setAnswerStatus] = useState<string>("");
 
   const [solution, setSolution] = useState<Array<string>>([]);
 
@@ -101,22 +148,33 @@ function App() {
   const [thatsAllFolks, setThatsAllFolks] = useState<boolean>(false);
 
   const [newTermRus, setNewTermRus] = useState<string>("");
+
   const [newTermEng, setNewTermEng] = useState<string>("");
 
   const [counter, setCounter] = useState<number>(100);
+
   const [visible, setVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    setSolutionWords(currentExample.eng.split(" "));
-  }, [currentExample]);
+  const [mistake, setMistake] = useState<boolean>(false);
+
+  const [updated, setUpdated] = useState<boolean>(false);
+
   useEffect(() => {
     if (examples.length !== 0) {
-      setCurrentExample(examples[getRandomInt(examples.length)]);
+      setCurrentExample(examples[Math.floor(Math.random() * examples.length)]);
     } else {
       setThatsAllFolks(true);
       setSolutionWords([]);
     }
   }, [examples]);
+  useEffect(() => {
+    setSolutionWords(currentExample.eng.split(" ").sort());
+  }, [currentExample]);
+  useEffect(() => {
+    setTimeout(() => {
+      setUpdated((prev) => (prev = !prev));
+    }, 1000);
+  }, [solutionWords]);
 
   const dragHandler = (word: string) => {
     setCurrentWord(word);
@@ -184,6 +242,9 @@ function App() {
         ...prev.slice(currentWordIndex + 1, prev.length),
       ]);
       setSolutionWords((prev) => [...prev, currentWord]);
+      setTimeout(() => {
+        setSolutionWords((prev) => prev.sort());
+      }, 500);
     } else if (
       solutionWords.includes(currentWord) &&
       !solution.includes(currentWord)
@@ -196,12 +257,18 @@ function App() {
         ...prev.slice(currentWordIndex + 1, prev.length),
       ]);
       setSolutionWords((prev) => [...prev, currentWord]);
+      setTimeout(() => {
+        setSolutionWords((prev) => prev.sort());
+      }, 500);
     }
   };
 
   const checkSolution = () => {
     if (solution.length === 0) {
-      alert("Для начала неплохо было бы хотя бы попытаться ответить!");
+      setAnswerStatus("no");
+      setTimeout(() => {
+        setAnswerStatus("");
+      }, 3000);
     } else if (solution.join(" ") === currentExample.eng) {
       let utterance = new SpeechSynthesisUtterance(currentExample.eng);
       let voices = window.speechSynthesis.getVoices();
@@ -209,15 +276,17 @@ function App() {
       speechSynthesis.speak(utterance);
       setExamples((prev) => prev.filter((ex) => ex.id !== currentExample.id));
       setSolution([]);
-      alert("Ответ правильный! Отличная работа!");
+      setAnswerStatus("correct");
+      setTimeout(() => {
+        setAnswerStatus("");
+      }, 3000);
     } else {
-      alert("Ответ неверный! Попробуй ещё разок!");
+      setAnswerStatus("wrong");
+      setTimeout(() => {
+        setAnswerStatus("");
+      }, 3000);
     }
   };
-
-  function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-  }
 
   const termRusHandler = (event: ChangeEvent) => {
     let target = event.target as HTMLInputElement;
@@ -232,7 +301,10 @@ function App() {
   const addNewExample = () => {
     setCounter((prev) => prev + 1);
     if (newTermRus.length === 0 || newTermEng.length === 0) {
-      alert("Сначала введите предложения в соответствующие поля!");
+      setMistake(true);
+      setTimeout(() => {
+        setMistake(false);
+      }, 1000);
     }
     if (newTermRus.length !== 0 && newTermEng.length !== 0) {
       let newExample = { id: counter, rus: newTermRus, eng: newTermEng };
@@ -261,17 +333,46 @@ function App() {
     setSolutionWords(currentExample.eng.split(" "));
   };
 
+  const visibleHandler = () => {
+    setVisible(true);
+  };
+
+  const answerSwitch = (answerStatus: string) => {
+    switch (answerStatus) {
+      case "no":
+        return (
+          <NoAnswerWindow>
+            <h1>Пожалуйста, составьте ответ!</h1>
+          </NoAnswerWindow>
+        );
+      case "wrong":
+        return (
+          <WrongAnswerWindow>
+            <h1>Ответ неверный! Попробуйте ещё раз!</h1>
+          </WrongAnswerWindow>
+        );
+      case "correct":
+        return (
+          <CorrectAnswerWindow>
+            <h1>Ответ правильный! Отлично!</h1>
+          </CorrectAnswerWindow>
+        );
+    }
+  };
+
   return (
     <div>
-      <NewAddNewExampleWindow
-        visible={visible}
-        newTermEng={newTermEng}
-        newTermRus={newTermRus}
-        termRusHandler={termRusHandler}
-        termEngHandler={termEngHandler}
-        addNewExample={addNewExample}
-        cancelAddingNewExample={cancelAddingNewExample}
-      />
+      {visible ? (
+        <NewAddNewExampleWindow
+          mistake={mistake}
+          newTermEng={newTermEng}
+          newTermRus={newTermRus}
+          termRusHandler={termRusHandler}
+          termEngHandler={termEngHandler}
+          addNewExample={addNewExample}
+          cancelAddingNewExample={cancelAddingNewExample}
+        />
+      ) : null}
       <AppWindow>
         <h3 style={{ fontFamily: "TaskFont" }}>
           Переведите данное предложение:
@@ -281,6 +382,7 @@ function App() {
           currentExample={currentExample}
           thatsAllFolks={thatsAllFolks}
         />
+        {answerSwitch(answerStatus)}
         <NewSolutionWindow
           thatsAllFolks={thatsAllFolks}
           solution={solution}
@@ -298,13 +400,13 @@ function App() {
           backDropHandler={backDropHandler}
         />
         <ConfirmButton
-          disabled={thatsAllFolks ? true : false}
+          disabled={thatsAllFolks || answerStatus.length !== 0}
           onClick={checkSolution}
         >
           Проверить
         </ConfirmButton>
-        <AddNewExampleButton onClick={() => setVisible(true)}>
-          Добавить пример
+        <AddNewExampleButton onClick={() => visibleHandler()}>
+          {updated ? "Добавить пример" : "Добавить пример"}
         </AddNewExampleButton>
       </AppWindow>
     </div>

@@ -6,13 +6,13 @@ const TaskWindow = styled.div`
   height: 100px;
   background-color: rgba(153, 255, 255, 0.774);
   margin: 10px auto;
-  font-family: "TaskFont";
   font-size: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   border-radius: 10px;
+  box-sizing: border-box;
 `;
 
 const ScipButton = styled.button`
@@ -31,7 +31,6 @@ const ScipButton = styled.button`
   :active {
     background-color: rgba(221, 25, 25, 0.801);
   }
-  font-family: "TaskFont";
 `;
 
 type TaskWindowProps = {
