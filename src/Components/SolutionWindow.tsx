@@ -4,7 +4,7 @@ import styled from "styled-components";
 const SolutionWindow = styled.div`
   width: 360px;
   height: 125px;
-  background-color: rgba(137, 220, 224, 0.568);
+  background-color: rgba(145, 255, 255, 0.6);
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -55,11 +55,11 @@ type NewSolutionWindowProps = {
   dragOverHandler(event: React.DragEvent<Element>): void;
   dropHandler(event: React.DragEvent<Element>): void;
   wordSortHandler(event: React.DragEvent<Element>): void;
-  dragOverWordHandler(event: React.DragEvent<Element>, sol: string): void;
+  dragOverWordHandler(event: React.DragEvent<Element>, sol: {}): void;
   resetHandler(): void;
-  dragHandler(sol: string): void;
+  dragHandler(sol: {}): void;
   thatsAllFolks: boolean;
-  solution: string[];
+  solution: { value: string; id: number }[];
 };
 
 const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
@@ -83,15 +83,15 @@ const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
       >
         Reset
       </ResetButton>
-      {solution.map((sol: string, index: number) => (
+      {solution.map((sol) => (
         <Words
           draggable={true}
-          key={sol.toString() + index.toString()}
+          key={sol.id}
           onDragOver={(event) => dragOverWordHandler(event, sol)}
           onDrop={(event) => wordSortHandler(event)}
           onDrag={() => dragHandler(sol)}
         >
-          {sol}
+          {sol.value}
         </Words>
       ))}
     </SolutionWindow>

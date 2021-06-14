@@ -37,8 +37,8 @@ const WordsWindow = styled.div`
 type newWordsWindowProps = {
   dragOverHandler(event: React.DragEvent<Element>): void;
   backDropHandler(event: React.DragEvent<Element>): void;
-  dragHandler(ex: string): void;
-  solutionWords: string[];
+  dragHandler(ex: {}): void;
+  solutionWords: { value: string; id: number }[];
 };
 
 const NewWordsWindow: React.FC<newWordsWindowProps> = ({
@@ -53,10 +53,10 @@ const NewWordsWindow: React.FC<newWordsWindowProps> = ({
       onDrop={(event) => backDropHandler(event)}
     >
       <FlipMove>
-        {solutionWords.map((ex: string) => {
+        {solutionWords.map((ex) => {
           return (
-            <Words key={ex} draggable={true} onDrag={() => dragHandler(ex)}>
-              {ex}
+            <Words key={ex.id} draggable={true} onDrag={() => dragHandler(ex)}>
+              {ex.value}
             </Words>
           );
         })}

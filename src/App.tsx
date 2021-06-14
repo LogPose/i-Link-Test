@@ -8,7 +8,7 @@ import NewWordsWindow from "./Components/WordsWindow";
 const AppWindow = styled.div`
   width: 400px;
   height: 500px;
-  background-color: rgba(233, 233, 233, 0.8);
+  background-color: #fff;
   margin-top: 20px;
   margin-left: 50%;
   left: -200px;
@@ -87,11 +87,13 @@ const NoAnswerWindow = styled.div`
   animation: ${animationForAnswerWindow} 3s forwards;
   opacity: 0;
 `;
+
 const WrongAnswerWindow = styled(NoAnswerWindow)`
   background-color: rgba(206, 76, 76, 0.8);
   color: rgb(110, 11, 11);
   font-size: 15px;
 `;
+
 const CorrectAnswerWindow = styled(NoAnswerWindow)`
   background-color: rgba(75, 221, 55, 0.8);
   color: rgb(18, 94, 8);
@@ -129,21 +131,34 @@ function App() {
       rus: "А потом назвали меня как тот самолёт, который был турецкий",
       eng: "And then they named me like that plane, which was Turkish",
     },
+    {
+      id: 7,
+      rus: "Война. Война никогда не меняется",
+      eng: "War. War never changes",
+    },
   ]);
 
-  const [currentExample, setCurrentExample] = useState(
-    examples[Math.floor(Math.random() * examples.length)]
-  );
+  const [currentExample, setCurrentExample] = useState<{
+    id: number;
+    rus: string;
+    eng: string;
+  }>({ id: 0, rus: "", eng: "" });
 
   const [answerStatus, setAnswerStatus] = useState<string>("");
 
-  const [solution, setSolution] = useState<Array<string>>([]);
+  const [solution, setSolution] = useState<{ value: string; id: number }[]>([]);
 
-  const [hoveredWord, setHoveredWord] = useState<string>("");
+  const [hoveredWord, setHoveredWord] = useState<{ value: string; id: number }>(
+    { value: "", id: 0 }
+  );
 
-  const [solutionWords, setSolutionWords] = useState<Array<string>>([]);
+  const [solutionWords, setSolutionWords] = useState<
+    { value: string; id: number }[]
+  >([]);
 
-  const [currentWord, setCurrentWord] = useState<string>("");
+  const [currentWord, setCurrentWord] = useState<{ value: string; id: number }>(
+    { value: "", id: 0 }
+  );
 
   const [thatsAllFolks, setThatsAllFolks] = useState<boolean>(false);
 
@@ -159,6 +174,13 @@ function App() {
 
   const [updated, setUpdated] = useState<boolean>(false);
 
+  let count = 1000;
+
+  const uniqueIdCounter = () => {
+    count = count + 1;
+    return count;
+  };
+
   useEffect(() => {
     if (examples.length !== 0) {
       setCurrentExample(examples[Math.floor(Math.random() * examples.length)]);
@@ -168,7 +190,22 @@ function App() {
     }
   }, [examples]);
   useEffect(() => {
-    setSolutionWords(currentExample.eng.split(" ").sort());
+    setSolutionWords(
+      currentExample.eng
+        .split(" ")
+        .map((el) => {
+          return { value: el, id: uniqueIdCounter() };
+        })
+        .sort(function compareFunction(a, b) {
+          if (a.value < b.value) {
+            return -1;
+          }
+          if (a.value > b.value) {
+            return 1;
+          }
+          return 0;
+        })
+    );
   }, [currentExample]);
   useEffect(() => {
     setTimeout(() => {
@@ -176,7 +213,7 @@ function App() {
     }, 1000);
   }, [solutionWords]);
 
-  const dragHandler = (word: string) => {
+  const dragHandler = (word: { value: string; id: number }) => {
     setCurrentWord(word);
   };
 
@@ -184,7 +221,10 @@ function App() {
     event.preventDefault();
   };
 
-  const dragOverWordHandler = (event: DragEvent, sol: string) => {
+  const dragOverWordHandler = (
+    event: DragEvent,
+    sol: { id: number; value: string }
+  ) => {
     event.preventDefault();
     event.stopPropagation();
     setHoveredWord(sol);
@@ -243,7 +283,17 @@ function App() {
       ]);
       setSolutionWords((prev) => [...prev, currentWord]);
       setTimeout(() => {
-        setSolutionWords((prev) => prev.sort());
+        setSolutionWords((prev) =>
+          prev.sort(function compareFunction(a, b) {
+            if (a.value < b.value) {
+              return -1;
+            }
+            if (a.value > b.value) {
+              return 1;
+            }
+            return 0;
+          })
+        );
       }, 500);
     } else if (
       solutionWords.includes(currentWord) &&
@@ -258,7 +308,17 @@ function App() {
       ]);
       setSolutionWords((prev) => [...prev, currentWord]);
       setTimeout(() => {
-        setSolutionWords((prev) => prev.sort());
+        setSolutionWords((prev) =>
+          prev.sort(function compareFunction(a, b) {
+            if (a.value < b.value) {
+              return -1;
+            }
+            if (a.value > b.value) {
+              return 1;
+            }
+            return 0;
+          })
+        );
       }, 500);
     }
   };
@@ -269,7 +329,14 @@ function App() {
       setTimeout(() => {
         setAnswerStatus("");
       }, 3000);
-    } else if (solution.join(" ") === currentExample.eng) {
+    } else if (
+      solution
+        .map((el) => {
+          return el.value;
+        })
+        .join(" ")
+        .toString() === currentExample.eng
+    ) {
       let utterance = new SpeechSynthesisUtterance(currentExample.eng);
       let voices = window.speechSynthesis.getVoices();
       utterance.voice = voices[2];
@@ -330,7 +397,22 @@ function App() {
 
   const resetHandler = () => {
     setSolution([]);
-    setSolutionWords(currentExample.eng.split(" "));
+    setSolutionWords(
+      currentExample.eng
+        .split(" ")
+        .map((el) => {
+          return { value: el, id: currentExample.eng.split(" ").indexOf(el) };
+        })
+        .sort(function compareFunction(a, b) {
+          if (a.value < b.value) {
+            return -1;
+          }
+          if (a.value > b.value) {
+            return 1;
+          }
+          return 0;
+        })
+    );
   };
 
   const visibleHandler = () => {
