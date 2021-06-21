@@ -73,13 +73,10 @@ const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
   solution,
 }) => {
   return (
-    <SolutionWindow
-      onDragOver={(event) => dragOverHandler(event)}
-      onDrop={(event) => dropHandler(event)}
-    >
+    <SolutionWindow onDragOver={dragOverHandler} onDrop={dropHandler}>
       <ResetButton
         disabled={thatsAllFolks || solution.length === 0}
-        onClick={() => resetHandler()}
+        onClick={resetHandler}
       >
         Reset
       </ResetButton>
@@ -87,9 +84,9 @@ const NewSolutionWindow: React.FC<NewSolutionWindowProps> = ({
         <Words
           draggable={true}
           key={sol.id}
-          onDragOver={(event) => dragOverWordHandler(event, sol)}
-          onDrop={(event) => wordSortHandler(event)}
+          onDrop={wordSortHandler}
           onDrag={() => dragHandler(sol)}
+          onDragOver={(event) => dragOverWordHandler(event, sol)}
         >
           {sol.value}
         </Words>

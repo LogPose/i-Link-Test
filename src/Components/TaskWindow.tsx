@@ -51,10 +51,7 @@ const NewTaskWindow: React.FC<TaskWindowProps> = ({
       ) : (
         currentExample.rus
       )}
-      <ScipButton
-        disabled={thatsAllFolks ? true : false}
-        onClick={() => onSkip()}
-      >
+      <ScipButton disabled={thatsAllFolks ? true : false} onClick={onSkip}>
         Skip
       </ScipButton>
     </TaskWindow>

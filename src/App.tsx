@@ -14,7 +14,6 @@ const AppWindow = styled.div`
   left: -200px;
   border-radius: 50px;
   position: relative;
-  overflow: hidden;
   box-sizing: border-box;
   text-align: center;
 `;
@@ -56,15 +55,15 @@ const AddNewExampleButton = styled.button`
 const animationForAnswerWindow = keyframes`
 from {
   opacity: 0;
-  margin-left: 350px;
+  margin-top: -150px;
 }
 to {
   opacity: 0;
-  margin-left: -350px;
+  margin-top: 150px;
 }
 50% {
   opacity: 1;
-  margin-left: 0px;
+  margin-top: 10px;
 }
 `;
 
@@ -172,15 +171,6 @@ function App() {
 
   const [mistake, setMistake] = useState<boolean>(false);
 
-  const [updated, setUpdated] = useState<boolean>(false);
-
-  let count = 1000;
-
-  const uniqueIdCounter = () => {
-    count = count + 1;
-    return count;
-  };
-
   useEffect(() => {
     if (examples.length !== 0) {
       setCurrentExample(examples[Math.floor(Math.random() * examples.length)]);
@@ -190,6 +180,11 @@ function App() {
     }
   }, [examples]);
   useEffect(() => {
+    let count = 1000;
+    const uniqueIdCounter = () => {
+      count = count + 1;
+      return count;
+    };
     setSolutionWords(
       currentExample.eng
         .split(" ")
@@ -209,7 +204,7 @@ function App() {
   }, [currentExample]);
   useEffect(() => {
     setTimeout(() => {
-      setUpdated((prev) => (prev = !prev));
+      setCounter((prev) => (prev = prev + 1));
     }, 1000);
   }, [solutionWords]);
 
@@ -222,7 +217,7 @@ function App() {
   };
 
   const dragOverWordHandler = (
-    event: DragEvent,
+    event: React.DragEvent<Element>,
     sol: { id: number; value: string }
   ) => {
     event.preventDefault();
@@ -281,7 +276,16 @@ function App() {
         ...prev.slice(0, currentWordIndex),
         ...prev.slice(currentWordIndex + 1, prev.length),
       ]);
-      setSolutionWords((prev) => [...prev, currentWord]);
+      let hoveredWordIndex = solutionWords.indexOf(hoveredWord);
+      if (!solutionWords.includes(hoveredWord)) {
+        setSolutionWords((prev) => [...prev, currentWord]);
+      } else {
+        setSolutionWords((prev) => [
+          ...prev.slice(0, hoveredWordIndex + 1),
+          currentWord,
+          ...prev.slice(hoveredWordIndex + 1, prev.length),
+        ]);
+      }
       setTimeout(() => {
         setSolutionWords((prev) =>
           prev.sort(function compareFunction(a, b) {
@@ -306,7 +310,17 @@ function App() {
         ...prev.slice(0, currentWordIndex),
         ...prev.slice(currentWordIndex + 1, prev.length),
       ]);
-      setSolutionWords((prev) => [...prev, currentWord]);
+      let hoveredWordIndex = solutionWords.indexOf(hoveredWord);
+      if (!solutionWords.includes(hoveredWord)) {
+        setSolutionWords((prev) => [...prev, currentWord]);
+      } else {
+        setSolutionWords((prev) => [
+          ...prev.slice(0, hoveredWordIndex + 1),
+          currentWord,
+          ...prev.slice(hoveredWordIndex + 1, prev.length),
+        ]);
+      }
+
       setTimeout(() => {
         setSolutionWords((prev) =>
           prev.sort(function compareFunction(a, b) {
@@ -443,7 +457,7 @@ function App() {
   };
 
   return (
-    <div>
+    <AppWindow>
       {visible ? (
         <NewAddNewExampleWindow
           mistake={mistake}
@@ -455,43 +469,40 @@ function App() {
           cancelAddingNewExample={cancelAddingNewExample}
         />
       ) : null}
-      <AppWindow>
-        <h3 style={{ fontFamily: "TaskFont" }}>
-          Переведите данное предложение:
-        </h3>
-        <NewTaskWindow
-          onSkip={skipHandler}
-          currentExample={currentExample}
-          thatsAllFolks={thatsAllFolks}
-        />
-        {answerSwitch(answerStatus)}
-        <NewSolutionWindow
-          thatsAllFolks={thatsAllFolks}
-          solution={solution}
-          resetHandler={resetHandler}
-          dragHandler={dragHandler}
-          dragOverHandler={dragOverHandler}
-          dragOverWordHandler={dragOverWordHandler}
-          dropHandler={dropHandler}
-          wordSortHandler={wordSortHandler}
-        />
-        <NewWordsWindow
-          solutionWords={solutionWords}
-          dragHandler={dragHandler}
-          dragOverHandler={dragOverHandler}
-          backDropHandler={backDropHandler}
-        />
-        <ConfirmButton
-          disabled={thatsAllFolks || answerStatus.length !== 0}
-          onClick={checkSolution}
-        >
-          Проверить
-        </ConfirmButton>
-        <AddNewExampleButton onClick={() => visibleHandler()}>
-          {updated ? "Добавить пример" : "Добавить пример"}
-        </AddNewExampleButton>
-      </AppWindow>
-    </div>
+      <h3>Переведите данное предложение:</h3>
+      <NewTaskWindow
+        onSkip={skipHandler}
+        currentExample={currentExample}
+        thatsAllFolks={thatsAllFolks}
+      />
+      {answerSwitch(answerStatus)}
+      <NewSolutionWindow
+        thatsAllFolks={thatsAllFolks}
+        solution={solution}
+        resetHandler={resetHandler}
+        dragHandler={dragHandler}
+        dragOverHandler={dragOverHandler}
+        dragOverWordHandler={dragOverWordHandler}
+        dropHandler={dropHandler}
+        wordSortHandler={wordSortHandler}
+      />
+      <NewWordsWindow
+        solutionWords={solutionWords}
+        dragHandler={dragHandler}
+        dragOverHandler={dragOverHandler}
+        backDropHandler={backDropHandler}
+        dragOverWordHandler={dragOverWordHandler}
+      />
+      <ConfirmButton
+        disabled={thatsAllFolks || answerStatus.length !== 0}
+        onClick={checkSolution}
+      >
+        Проверить
+      </ConfirmButton>
+      <AddNewExampleButton onClick={visibleHandler}>
+        Добавить пример
+      </AddNewExampleButton>
+    </AppWindow>
   );
 }
 

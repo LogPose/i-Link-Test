@@ -21,7 +21,6 @@ const NewTextArea = styled.textarea`
   outline: none;
   border: 2px rgba(7, 116, 31, 0.9) solid;
   margin-top: 20px;
-  margin-left: 20px;
 `;
 
 const ConfirmNewExampleButton = styled.button`
@@ -79,20 +78,20 @@ const NewAddNewExampleWindow: React.FC<AddNewExampleWindowProps> = ({
     <AddNewExampleWindow>
       <NewTextArea
         value={newTermRus}
-        onChange={(event) => termRusHandler(event)}
+        onChange={termRusHandler}
         maxLength={150}
         placeholder="Введите предложение на русском (не более 150 символов)"
       ></NewTextArea>
       <NewTextArea
         value={newTermEng}
-        onChange={(event) => termEngHandler(event)}
+        onChange={termEngHandler}
         maxLength={150}
         placeholder="Введите перевод (желательно точный) предложения на английском (не более 150 символов)"
       ></NewTextArea>
-      <ConfirmNewExampleButton onClick={() => addNewExample()}>
+      <ConfirmNewExampleButton onClick={addNewExample}>
         {mistake ? "Заполните поля!" : "Добавить"}
       </ConfirmNewExampleButton>
-      <DeclineNewExampleButton onClick={() => cancelAddingNewExample()}>
+      <DeclineNewExampleButton onClick={cancelAddingNewExample}>
         Отмена
       </DeclineNewExampleButton>
     </AddNewExampleWindow>
