@@ -1,5 +1,6 @@
 import React, { ChangeEvent, DragEvent, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { useQuery } from "urql";
 import NewAddNewExampleWindow from "./Components/AddNewExampleWindow";
 import NewSolutionWindow from "./Components/SolutionWindow";
 import NewTaskWindow from "./Components/TaskWindow";
@@ -99,41 +100,26 @@ const CorrectAnswerWindow = styled(NoAnswerWindow)`
 `;
 
 function App() {
+  const ExampleQuery = `
+                          query {
+                                sentenceAll {
+                                  ru
+                                  en
+                                }
+                            }
+                          `;
+
+  const [result, reexecuteQuery] = useQuery({
+    query: ExampleQuery,
+  });
+
+  const { data, fetching } = result;
+
   const [examples, setExamples] = useState([
     {
       id: 1,
-      rus: "Вчера сегодня было завтра",
-      eng: "Yesterday today was tomorrow",
-    },
-    {
-      id: 2,
-      rus: "Рафик сто процентов не виноват",
-      eng: "Rafik is not one hundred percent to blame",
-    },
-    {
-      id: 3,
-      rus: "Безумно можно быть первым",
-      eng: "Its crazy to be the first",
-    },
-    {
-      id: 4,
-      rus: "Весь мир в труху - но потом",
-      eng: "The whole world is in dust - but then",
-    },
-    {
-      id: 5,
-      rus: "У меня плохое предчувствие об этом",
-      eng: "I have a bad feeling about this",
-    },
-    {
-      id: 6,
-      rus: "А потом назвали меня как тот самолёт, который был турецкий",
-      eng: "And then they named me like that plane, which was Turkish",
-    },
-    {
-      id: 7,
-      rus: "Война. Война никогда не меняется",
-      eng: "War. War never changes",
+      rus: "",
+      eng: "",
     },
   ]);
 
@@ -170,6 +156,22 @@ function App() {
   const [visible, setVisible] = useState<boolean>(false);
 
   const [mistake, setMistake] = useState<boolean>(false);
+
+  const [wrongAnswers, setWrongAnswers] = useState<number>(0);
+
+  const [skipCounter, setSkipCounter] = useState<number>(0);
+
+  useEffect(() => {
+    if (!fetching) {
+      let idCount = 2;
+      const testExamples = data.sentenceAll.map(
+        (el: { ru: string; en: string }) => {
+          return { id: idCount++, rus: el.ru, eng: el.en };
+        }
+      );
+      setExamples(testExamples);
+    }
+  }, [fetching]);
 
   useEffect(() => {
     if (examples.length !== 0) {
@@ -363,6 +365,7 @@ function App() {
       }, 3000);
     } else {
       setAnswerStatus("wrong");
+      setWrongAnswers((prev) => prev + 1);
       setTimeout(() => {
         setAnswerStatus("");
       }, 3000);
@@ -405,6 +408,7 @@ function App() {
   };
 
   const skipHandler = () => {
+    setSkipCounter((prev) => prev + 1);
     setExamples((prev) => prev.filter((ex) => ex.id !== currentExample.id));
     setSolution([]);
   };
@@ -474,6 +478,8 @@ function App() {
         onSkip={skipHandler}
         currentExample={currentExample}
         thatsAllFolks={thatsAllFolks}
+        wrongAnswers={wrongAnswers}
+        skipCounter={skipCounter}
       />
       {answerSwitch(answerStatus)}
       <NewSolutionWindow
